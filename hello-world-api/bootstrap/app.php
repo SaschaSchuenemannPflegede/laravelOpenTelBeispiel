@@ -1,5 +1,11 @@
 <?php
 
+use OpenTelemetry\Sdk\Trace\TracerProvider;
+use OpenTelemetry\Trace as API;
+use OpenTelemetry\Exporter\Prometheus\Exporter as PrometheusExporter;
+use Prometheus\CollectorRegistry;
+use Prometheus\Storage\InMemory;
+
 /*
 |--------------------------------------------------------------------------
 | Create The Application
@@ -14,6 +20,7 @@
 $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
+
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +47,9 @@ $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
     App\Exceptions\Handler::class
 );
+
+
+
 
 /*
 |--------------------------------------------------------------------------
