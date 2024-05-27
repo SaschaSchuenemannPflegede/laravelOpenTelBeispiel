@@ -10,8 +10,11 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
+        "open-telemetry/api": "^1.0",
         "open-telemetry/exporter-otlp": "^1.0",
         "open-telemetry/opentelemetry": "*",
+        "open-telemetry/sdk": "^1.0",
+        "open-telemetry/sem-conv": "^1.25",
         "php-http/httplug": "^2.4"
     },
     "require-dev": {

@@ -41,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
             $reader = new ExportingReader($otlpExporter);
 
             $reader->collect();
+
+            $tracer = \OpenTelemetry\API\Globals::tracerProvider()(new SimpleSpanProcessor($otlpExporter),new AlwaysOnSampler())->getTracer('Hello World Laravel Web Server');
         }
     }
 
