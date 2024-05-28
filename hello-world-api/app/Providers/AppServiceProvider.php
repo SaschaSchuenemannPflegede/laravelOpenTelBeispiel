@@ -14,6 +14,9 @@ use OpenTelemetry\Contrib\Otlp\MetricExporter;
 use OpenTelemetry\SDK\Metrics\MetricReader\ExportingReader;
 use OpenTelemetry\SDK\Metrics\MeterProvider;
 use OpenTelemetry\API\Metrics\Meter;
+use OpenTelemetry\SDK\Common\Export\Http\PsrTransportFactory;
+use OpenTelemetry\Contrib\Otlp\OtlpHttpTransportFactory;
+use OpenTelemetry\SDK\Common\Export\Http\PsrTransportFactory;
 
 require __DIR__ . '/../../vendor/autoload.php';
 
@@ -55,6 +58,19 @@ class AppServiceProvider extends ServiceProvider
 
     function setupHttpExporter(): void 
     {
+        $transport = (new OtlpHttpTransportFactory())->create(env('OTEL_EXPORTER_OTLP_ENDPOINT', 'http://localhost:4318'), 'application/json');
+        $exporter = new SpanExporter($transport);
+        
+        $tracerProvider = new TracerProvider(
+            new SimpleSpanProcessor($exporter)
+           );
+           $GLOBALS["tracer"] = $tracerProvider->getTracer('io.opentelemetry.contrib.php');
+
+           $GLOBALS["reader"] = new ExportingReader(
+            new MetricExporter(
+                (new OtlpHttpTransportFactory())->create(env('OTEL_EXPORTER_OTLP_ENDPOINT', 'http://localhost:4318') . OtlpUtil::method(Signals::METRICS), 'application/json')
+            )
+        );
         
     }
 
@@ -73,7 +89,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Check if OpenTelemetry is enabled
         if ($config['enabled']) {
-            $this->setupGrpcExporter();
+            $this->setupHttpExporter();
             
         }
     }
