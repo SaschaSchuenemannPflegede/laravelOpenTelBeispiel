@@ -13,6 +13,9 @@ use OpenTelemetry\SDK\Metrics\InMemoryMetricsExport;
 use OpenTelemetry\SDK\Trace\TracerProvider;
 use OpenTelemetry\SDK\Trace\SpanProcessor\SimpleSpanProcessor;
 use OpenTelemetry\Contrib\Otlp\OtlpHttpTransportFactory;
+use OpenTelemetry\Contrib\Grpc\GrpcTransportFactory;
+use OpenTelemetry\Contrib\Otlp\OtlpUtil;
+use OpenTelemetry\API\Signals;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,7 +38,8 @@ class AppServiceProvider extends ServiceProvider
         // Check if OpenTelemetry is enabled
         if ($config['enabled']) {
             // Create an OTLP exporter based on the configuration
-            $transport = (new OtlpHttpTransportFactory())->create(env('OTEL_EXPORTER_OTLP_ENDPOINT', 'http://localhost:4317'), 'application/json');
+            //$transport = (new OtlpHttpTransportFactory())->create(env('OTEL_EXPORTER_OTLP_ENDPOINT', 'http://localhost:4317'), 'application/json');
+            $transport = (new GrpcTransportFactory())->create(env('OTEL_EXPORTER_OTLP_ENDPOINT', 'http://localhost:4317') . OtlpUtil::method(Signals::TRACE));
             $exporter = new SpanExporter($transport);
 
             //$reader = new ExportingReader($otlpExporter);
@@ -46,6 +50,10 @@ class AppServiceProvider extends ServiceProvider
                 new SimpleSpanProcessor($exporter)
                );
             $tracer = $tracerProvider->getTracer('io.opentelemetry.contrib.php');
+            $tracer
+                ->spanBuilder('example')
+                ->startSpan()
+                ->end();
 
             //$tracer = \OpenTelemetry\API\Globals::tracerProvider()(new SimpleSpanProcessor($otlpExporter),new AlwaysOnSampler())->getTracer('Hello World Laravel Web Server');
         }

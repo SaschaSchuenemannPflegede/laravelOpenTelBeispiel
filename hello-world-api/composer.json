@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "grpc/grpc": "^1.38",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
@@ -15,6 +16,7 @@
         "open-telemetry/opentelemetry": "*",
         "open-telemetry/sdk": "^1.0",
         "open-telemetry/sem-conv": "^1.25",
+        "open-telemetry/transport-grpc": "*",
         "php-http/httplug": "^2.4"
     },
     "require-dev": {
