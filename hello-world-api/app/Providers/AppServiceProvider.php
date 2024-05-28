@@ -27,6 +27,37 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
+    function setupGrpcExporter(): void 
+    {
+        // Create an GRPC exporter based on the configuration
+        $transport = (new GrpcTransportFactory())->create(env('OTEL_EXPORTER_GRPC_ENDPOINT', 'http://localhost:4317') . OtlpUtil::method(Signals::TRACE));
+        $exporter = new SpanExporter($transport);
+
+        $tracerProvider = new TracerProvider(
+            new SimpleSpanProcessor($exporter)
+           );
+
+        // storing tracer object as global variable so it can be used when handling requests in controller classes
+        $GLOBALS["tracer"] = $tracerProvider->getTracer('io.opentelemetry.contrib.php');
+
+        
+
+        $GLOBALS["reader"] = new ExportingReader(
+            new MetricExporter(
+                (new GrpcTransportFactory())->create(env('OTEL_EXPORTER_GRPC_ENDPOINT', 'http://localhost:4317') . OtlpUtil::method(Signals::METRICS))
+            )
+        );
+
+        // Create a Meter Provider and a Meter
+        $meterProvider = MeterProvider::builder()->addReader($GLOBALS["reader"])->build();
+        $GLOBALS["meter"] = $meterProvider->getMeter('example-meter');
+    }
+
+    function setupHttpExporter(): void 
+    {
+        
+    }
+
     /**
      * Bootstrap any application services.
      */
@@ -42,28 +73,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Check if OpenTelemetry is enabled
         if ($config['enabled']) {
-            // Create an GRPC exporter based on the configuration
-            $transport = (new GrpcTransportFactory())->create(env('OTEL_EXPORTER_GRPC_ENDPOINT', 'http://localhost:4317') . OtlpUtil::method(Signals::TRACE));
-            $exporter = new SpanExporter($transport);
-
-            $tracerProvider = new TracerProvider(
-                new SimpleSpanProcessor($exporter)
-               );
-
-            // storing tracer object as global variable so it can be used when handling requests in controller classes
-            $GLOBALS["tracer"] = $tracerProvider->getTracer('io.opentelemetry.contrib.php');
-
-            
-
-            $GLOBALS["reader"] = new ExportingReader(
-                new MetricExporter(
-                    (new GrpcTransportFactory())->create(env('OTEL_EXPORTER_GRPC_ENDPOINT', 'http://localhost:4317') . OtlpUtil::method(Signals::METRICS))
-                )
-            );
-
-            // Create a Meter Provider and a Meter
-            $meterProvider = MeterProvider::builder()->addReader($GLOBALS["reader"])->build();
-            $GLOBALS["meter"] = $meterProvider->getMeter('example-meter');
+            $this->setupGrpcExporter();
             
         }
     }
