@@ -64,12 +64,6 @@ class AppServiceProvider extends ServiceProvider
             // Create a Meter Provider and a Meter
             $meterProvider = MeterProvider::builder()->addReader($GLOBALS["reader"])->build();
             $GLOBALS["meter"] = $meterProvider->getMeter('example-meter');
-
-
-            $counter = $GLOBALS["meter"]->createCounter('example_counter', 'An example counter metric', '1');
-
-            // Force export of the metrics
-            $GLOBALS["reader"]->collect();
             
         }
     }

@@ -32,13 +32,17 @@ class HelloWorldController extends Controller
         $meterProvider = MeterProvider::builder()->addReader($GLOBALS["reader"])->build();
         $GLOBALS["meter"] = $meterProvider->getMeter('example-meter');
 
-        $counter = $GLOBALS["meter"]->createCounter('example_counter', 'An example counter metric', '1');
+        $counter = $GLOBALS["meter"]
+        ->createCounter('example_counter', 'An example counter metric', 'number of requests' )
+        ->add($count);
+        
+        /*
         $GLOBALS["meter"]
             ->createObservableGauge('number', 'items', 'Random number')
             ->observe(static function (ObserverInterface $observer): void {
                 $observer->observe(random_int(0, 256));
             });
-
+        */
         // Force export of the metrics
         $GLOBALS["reader"]->collect();
         
