@@ -57,7 +57,7 @@ class AppServiceProvider extends ServiceProvider
 
     function setupHttpExporter(): void 
     {
-        $transport = (new OtlpHttpTransportFactory())->create(env('OTEL_EXPORTER_OTLP_ENDPOINT', 'http://localhost:4318'), 'application/json');
+        $transport = PsrTransportFactory::discover()->create(env('OTEL_EXPORTER_OTLP_ENDPOINT', 'http://localhost:4318') . '/v1/traces', 'application/json');
         $exporter = new SpanExporter($transport);
         
         $tracerProvider = new TracerProvider(
