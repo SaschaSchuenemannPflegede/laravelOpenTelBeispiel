@@ -18,7 +18,7 @@ class HelloWorldController extends Controller
         $count = Cache::get('request_count', 0);
 
         // creating new span from globally defined tracer;
-        /*
+        
         $span = $GLOBALS["tracer"]
                 ->spanBuilder('handling request to helloworld api')
                 ->startSpan();
@@ -26,7 +26,7 @@ class HelloWorldController extends Controller
         // adding request count event to span
         $span->addEvent('request_count', ['count' => $count]);
         $span -> end();
-        */
+        
 
         
         $meterProvider = MeterProvider::builder()->addReader($GLOBALS["reader"])->build();
@@ -36,13 +36,13 @@ class HelloWorldController extends Controller
         ->createCounter('example_counter', 'An example counter metric', 'number of requests' )
         ->add($count);
         
-        /*
+        
         $GLOBALS["meter"]
             ->createObservableGauge('number', 'items', 'Random number')
             ->observe(static function (ObserverInterface $observer): void {
                 $observer->observe(random_int(0, 256));
             });
-        */
+        
         // Force export of the metrics
         $GLOBALS["reader"]->collect();
         

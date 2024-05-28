@@ -16,7 +16,6 @@ use OpenTelemetry\SDK\Metrics\MeterProvider;
 use OpenTelemetry\API\Metrics\Meter;
 use OpenTelemetry\SDK\Common\Export\Http\PsrTransportFactory;
 use OpenTelemetry\Contrib\Otlp\OtlpHttpTransportFactory;
-use OpenTelemetry\SDK\Common\Export\Http\PsrTransportFactory;
 
 require __DIR__ . '/../../vendor/autoload.php';
 
@@ -68,9 +67,7 @@ class AppServiceProvider extends ServiceProvider
 
            $GLOBALS["reader"] = new ExportingReader(
             new MetricExporter(
-                (new OtlpHttpTransportFactory())->create(env('OTEL_EXPORTER_OTLP_ENDPOINT', 'http://localhost:4318') . OtlpUtil::method(Signals::METRICS), 'application/json')
-            )
-        );
+                PsrTransportFactory::discover()->create('http://localhost:4318/v1/metrics', \OpenTelemetry\Contrib\Otlp\ContentTypes::JSON)));
         
     }
 
