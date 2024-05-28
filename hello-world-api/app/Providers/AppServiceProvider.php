@@ -35,6 +35,9 @@ class AppServiceProvider extends ServiceProvider
         // Read OpenTelemetry configuration
         $config = config('opentelemetry');
 
+        // iniate request counter
+        $GLOBALS["request_count"] = 0;
+
         // Check if OpenTelemetry is enabled
         if ($config['enabled']) {
             // Create an OTLP exporter based on the configuration
@@ -49,11 +52,11 @@ class AppServiceProvider extends ServiceProvider
             $tracerProvider = new TracerProvider(
                 new SimpleSpanProcessor($exporter)
                );
-            $tracer = $tracerProvider->getTracer('io.opentelemetry.contrib.php');
-            $tracer
-                ->spanBuilder('example')
-                ->startSpan()
-                ->end();
+            $GLOBALS["tracer"] = $tracerProvider->getTracer('io.opentelemetry.contrib.php');
+            //$tracer
+            //    ->spanBuilder('starting helloworld api')
+            //    ->startSpan()
+            //    ->end();
 
             //$tracer = \OpenTelemetry\API\Globals::tracerProvider()(new SimpleSpanProcessor($otlpExporter),new AlwaysOnSampler())->getTracer('Hello World Laravel Web Server');
         }
