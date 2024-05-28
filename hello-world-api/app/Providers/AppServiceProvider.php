@@ -9,6 +9,7 @@ use OpenTelemetry\SDK\Trace\SpanProcessor\SimpleSpanProcessor;
 use OpenTelemetry\Contrib\Grpc\GrpcTransportFactory;
 use OpenTelemetry\Contrib\Otlp\OtlpUtil;
 use OpenTelemetry\API\Signals;
+use Illuminate\Support\Facades\Cache;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,8 +29,10 @@ class AppServiceProvider extends ServiceProvider
         // Read OpenTelemetry configuration
         $config = config('opentelemetry');
 
-        // iniate request counter
-        $GLOBALS["request_count"] = 0;
+        // Initialize the request_count if it doesn't exist
+        if (!Cache::has('request_count')) {
+            Cache::put('request_count', 0);
+        }
 
         // Check if OpenTelemetry is enabled
         if ($config['enabled']) {
