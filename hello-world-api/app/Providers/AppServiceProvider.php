@@ -57,7 +57,7 @@ class AppServiceProvider extends ServiceProvider
 
     function setupHttpExporter(): void 
     {
-        $transport = (new OtlpHttpTransportFactory())->create(env('OTEL_EXPORTER_OTLP_ENDPOINT', 'http://localhost:4318') . '/v1/traces', 'application/json');
+        $transport = (new OtlpHttpTransportFactory())->create(env('OTEL_EXPORTER_OTLP_ENDPOINT', 'http://localhost:4318') . '/v1/traces', \OpenTelemetry\Contrib\Otlp\ContentTypes::JSON);
         $exporter = new SpanExporter($transport);
         
         $tracerProvider = new TracerProvider(
@@ -67,7 +67,7 @@ class AppServiceProvider extends ServiceProvider
 
            $GLOBALS["reader"] = new ExportingReader(
             new MetricExporter(
-                (new OtlpHttpTransportFactory())->create('http://localhost:4318/v1/metrics', \OpenTelemetry\Contrib\Otlp\ContentTypes::JSON)));
+                (new OtlpHttpTransportFactory())->create(env('OTEL_EXPORTER_OTLP_ENDPOINT', 'http://localhost:4318') . '/v1/metrics', \OpenTelemetry\Contrib\Otlp\ContentTypes::JSON)));
         
     }
 
